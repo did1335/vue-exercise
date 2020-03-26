@@ -204,7 +204,7 @@
                             </li>-->
                         </ul>
                         <div class="card-footer d-flex justify-content-between">
-                            <span>還有 {{ counter }} 筆任務未完成</span>
+                            <span>還有 {{ countActive }} 筆任務未完成</span>
                             <a href="#" @click="removeAll">清除所有任務</a>
                         </div>
                     </div>
@@ -215,7 +215,7 @@
                         el: '#app',
                         data: {
                             id: 0,
-                            counter: 0,
+                            all: 0,
                             newTodo: '',
                             /*todos: [{
                                 id: '',
@@ -227,6 +227,11 @@
                             cacheTitle: '',
                             visibility: 'all'
                         },
+                        watch: {
+                            todos: function(todo) {
+                                this.all = todo.length;
+                            }
+                        },
                         methods: {
                             addTodo: function() {
                                 var val = this.newTodo.trim();
@@ -236,7 +241,6 @@
 
                                 var index = this.id + 1;
                                 this.id = index;
-                                this.counter = this.counter + 1;
                                 this.todos.push({
                                     id: index,
                                     title: val,
@@ -250,10 +254,6 @@
                                     return todo.id == item.id;
                                 });
                                 this.todos.splice(newIndex, 1);
-                                while (this.counter > 0) {
-                                    this.counter = this.counter - 1;
-                                    break;
-                                }
                             },
                             changeTab: function(tab) {
                                 this.visibility = tab;
@@ -272,7 +272,6 @@
                             },
                             removeAll: function() {
                                 this.id = 0;
-                                this.counter = 0;
                                 this.newTodo = '';
                                 this.todos = [];
                                 this.cacheTodo = {};
@@ -303,6 +302,24 @@
                                     return newTodo2;
                                 }
                                 return;
+                            },
+                            countActive: function() {
+                                //未完成
+                                newTodo2 = new Array();
+                                this.todos.forEach(function(item) {
+                                    if (!item.completed) {
+                                        newTodo2.push(item);
+                                    }
+                                })
+                                return newTodo2.length;
+                            },
+                            done: function() {
+                                //完成
+                                if (this.all > 0) {
+                                    return this.all - this.countActive;
+                                } else {
+                                    return 0;
+                                }
                             }
                         },
                     });
